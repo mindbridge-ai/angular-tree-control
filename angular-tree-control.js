@@ -202,6 +202,7 @@ if (typeof module !== "undefined" && typeof exports !== "undefined" && module.ex
 
                             $scope.selectNodeLabel = function(selectedNode) {
                                 var transcludedScope = this;
+                                var parentNodeLevel = selectedNode.level - 1 == 0 ? 0 : selectedNode.level - 1;
                                 if (
                                     !$scope.options.isLeaf(selectedNode, $scope) &&
                                     (!$scope.options.dirSelectable || !$scope.options.isSelectable(selectedNode))
@@ -215,6 +216,9 @@ if (typeof module !== "undefined" && typeof exports !== "undefined" && module.ex
                                     var selected = false;
                                     if ($scope.options.multiSelection) {
                                         var pos = -1;
+                                        var parentPos = null;
+                                        var parentLevelSelectedNodes = Array.from($scope.selectedNodes);
+                                        parentLevelSelectedNodes = parentLevelSelectedNodes.filter(node => node.level == parentNodeLevel);
                                         for (var i = 0; i < $scope.selectedNodes.length; i++) {
                                             if ($scope.options.equality(selectedNode, $scope.selectedNodes[i], $scope)) {
                                                 pos = i;
@@ -226,10 +230,12 @@ if (typeof module !== "undefined" && typeof exports !== "undefined" && module.ex
                                             selected = true;
                                         } else {
                                             $scope.selectedNodes.splice(pos, 1);
+                                            removeParentSelection(transcludedScope.$parent.node, selectedNode, parentPos);
                                         }
 
                                         if (this.autoSelectChildren) {
-                                            selectedNode.children.forEach(child => {
+                                            var childrenToToggle = findToggableChildren(selectedNode.children);
+                                            childrenToToggle.forEach(child => {
                                                 this.selectNodeLabel(child);
                                             });
                                         }
@@ -267,6 +273,51 @@ if (typeof module !== "undefined" && typeof exports !== "undefined" && module.ex
                                     }
                                 }
                             };
+
+                            function findToggableChildren(selectedNodeChildren) {
+                                if (selectedNodeChildren.length > 0) {
+                                    var unselectedChildren = [];
+                                    var selectedCount = 0;
+                                    selectedNodeChildren.forEach(child => {
+                                        var selected = false;
+                                        for (var i = 0; i < $scope.selectedNodes.length; i++) {
+                                            if ($scope.options.equality(child, $scope.selectedNodes[i], $scope)) {
+                                                selected = true;
+                                                selectedCount++;
+                                                break;
+                                            }
+                                        }
+                                        if (!selected) {
+                                            unselectedChildren.push(child);
+                                        }
+                                    });
+
+                                    if (selectedCount == selectedNodeChildren.length) {
+                                        //deselect all children
+                                        return selectedNodeChildren;
+                                    } else {
+                                        //select all unselected children
+                                        return unselectedChildren;
+                                    }
+                                }
+
+                                //return empty array
+                                return selectedNodeChildren;
+                            }
+
+                            function removeParentSelection(parentNode) {
+                                var parentPos = null;
+                                for (var i = 0; i < $scope.selectedNodes.length; i++) {
+                                    if ($scope.options.equality(parentNode, $scope.selectedNodes[i], $scope)) {
+                                        parentPos = i;
+                                        break;
+                                    }
+                                }
+
+                                if (parentPos !== null) {
+                                    $scope.selectedNodes.splice(parentPos, 1);
+                                }
+                            }
 
                             $scope.selectedClass = function() {
                                 var isThisNodeSelected = this.isSelectedNode(this.node);
@@ -321,7 +372,7 @@ if (typeof module !== "undefined" && typeof exports !== "undefined" && module.ex
                                     "set-node-to-data>" +
                                     '<i class="tree-branch-head" ng-class="iBranchClass()" ng-click="selectNodeHead(node)"></i>' +
                                     '<i class="tree-leaf-head {{options.iLeafClass}}"></i>' +
-                                    '<input type="checkbox" ng-checked="isSelectedNode(node)" ng-click="selectNodeLabel(node)">' +
+                                    '<input ng-show="options.multiSelection" type="checkbox" style="cursor: pointer;" ng-checked="isSelectedNode(node)" ng-click="selectNodeLabel(node)">' +
                                     '<div class="tree-label {{options.labelClass}}"  ng-click="selectNodeLabel(node)" tree-transclude></div>' +
                                     '<treeitem ng-if="nodeExpanded()"></treeitem>' +
                                     "</li>" +
