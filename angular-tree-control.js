@@ -372,7 +372,7 @@ if (typeof module !== "undefined" && typeof exports !== "undefined" && module.ex
                                     "set-node-to-data>" +
                                     '<i class="tree-branch-head" ng-class="iBranchClass()" ng-click="selectNodeHead(node)"></i>' +
                                     '<i class="tree-leaf-head {{options.iLeafClass}}"></i>' +
-                                    '<input ng-show="options.multiSelection" type="checkbox" style="cursor: pointer;" ng-checked="isSelectedNode(node)" ng-click="selectNodeLabel(node)">' +
+                                    '<input ng-show="options.multiSelection" type="checkbox" style="cursor: pointer;" ng-checked="isSelectedNode(node)" ng-click="selectNodeLabel(node)"></input>' +
                                     '<div class="tree-label {{options.labelClass}}"  ng-class="options.multiSelection ? [] : [selectedClass(), unselectableClass()]" ng-click="selectNodeLabel(node)" tree-transclude></div>' +
                                     '<treeitem class="tree-control-item" ng-if="nodeExpanded()"></treeitem>' +
                                     "</li>" +
