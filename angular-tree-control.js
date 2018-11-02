@@ -218,7 +218,9 @@ if (typeof module !== "undefined" && typeof exports !== "undefined" && module.ex
                                         var pos = -1;
                                         var parentPos = null;
                                         var parentLevelSelectedNodes = Array.from($scope.selectedNodes);
-                                        parentLevelSelectedNodes = parentLevelSelectedNodes.filter(node => node.level == parentNodeLevel);
+                                        parentLevelSelectedNodes = parentLevelSelectedNodes.filter(function(node) {
+                                            node.level == parentNodeLevel;
+                                        });
                                         for (var i = 0; i < $scope.selectedNodes.length; i++) {
                                             if ($scope.options.equality(selectedNode, $scope.selectedNodes[i], $scope)) {
                                                 pos = i;
@@ -235,7 +237,7 @@ if (typeof module !== "undefined" && typeof exports !== "undefined" && module.ex
 
                                         if (this.autoSelectChildren) {
                                             var childrenToToggle = findToggableChildren(selectedNode.children);
-                                            childrenToToggle.forEach(child => {
+                                            childrenToToggle.forEach(function(child) {
                                                 this.selectNodeLabel(child);
                                             });
                                         }
@@ -278,7 +280,7 @@ if (typeof module !== "undefined" && typeof exports !== "undefined" && module.ex
                                 if (selectedNodeChildren.length > 0) {
                                     var unselectedChildren = [];
                                     var selectedCount = 0;
-                                    selectedNodeChildren.forEach(child => {
+                                    selectedNodeChildren.forEach(function(child) {
                                         var selected = false;
                                         for (var i = 0; i < $scope.selectedNodes.length; i++) {
                                             if ($scope.options.equality(child, $scope.selectedNodes[i], $scope)) {
