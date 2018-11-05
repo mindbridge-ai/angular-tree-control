@@ -236,9 +236,10 @@ if (typeof module !== "undefined" && typeof exports !== "undefined" && module.ex
                                         }
 
                                         if (this.autoSelectChildren) {
+                                            var that = this;
                                             var childrenToToggle = findToggableChildren(selectedNode.children);
                                             childrenToToggle.forEach(function(child) {
-                                                this.selectNodeLabel(child);
+                                                that.selectNodeLabel(child);
                                             });
                                         }
                                     } else {
