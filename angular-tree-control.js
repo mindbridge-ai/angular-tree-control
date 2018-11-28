@@ -294,7 +294,7 @@ if (typeof module !== "undefined" && typeof exports !== "undefined" && module.ex
                                         }
                                     }
 
-                                    if (typeof selectedNode.parent !== "undefined") {
+                                    if (typeof selectedNode.parent !== "undefined" && $scope.options.multiSelection) {
                                         deselectParentNodes($scope.selectedNodes[selectedNode.parent].node, $scope, selected, true);
                                     }
 
