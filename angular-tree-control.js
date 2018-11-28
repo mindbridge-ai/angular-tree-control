@@ -59,20 +59,6 @@ if (typeof module !== "undefined" && typeof exports !== "undefined" && module.ex
         return true;
     }
 
-    function verifyNoChildren(selectedNode, scope) {
-        return (
-            scope.selectedNodes[selectedNode.code].selectedChildren === scope.selectedNodes[selectedNode.code].node.children.length &&
-            scope.selectedNodes[selectedNode.code].node.children.length === 0
-        );
-    }
-
-    function verifyAllChildrenSelected(selectedNode, scope) {
-        return (
-            scope.selectedNodes[selectedNode.code].selectedChildren === scope.selectedNodes[selectedNode.code].node.children.length &&
-            scope.selectedNodes[selectedNode.code].node.children.length !== 0
-        );
-    }
-
     function deselectParentNodes(selectedNode, scope, selected) {
         //All children selected => select
         if (scope.selectedNodes[selectedNode.code].selectedChildren === selectedNode.children.length) {
@@ -304,13 +290,7 @@ if (typeof module !== "undefined" && typeof exports !== "undefined" && module.ex
                                         }
                                     }
 
-                                    deselectParentNodes(
-                                        $scope.selectedNodes[selectedNode.parent].node,
-                                        // $scope.selectedNodes[$scope.selectedNodes[selectedNode.code].node.parent].node,
-                                        $scope,
-                                        selected,
-                                        true
-                                    );
+                                    deselectParentNodes($scope.selectedNodes[selectedNode.parent].node, $scope, selected, true);
                                     if ($scope.onSelection) {
                                         var parentNode =
                                             transcludedScope.$parent.node === transcludedScope.synteticRoot
