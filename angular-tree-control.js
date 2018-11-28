@@ -260,7 +260,7 @@ if (typeof module !== "undefined" && typeof exports !== "undefined" && module.ex
                             };
 
                             //pass parameter of all children to keep in memory? Test if all selected
-                            $scope.selectNodeLabel = function(selectedNode) {
+                            $scope.selectNodeLabel = function(selectedNode, isChild) {
                                 var transcludedScope = this;
 
                                 if (
@@ -275,7 +275,7 @@ if (typeof module !== "undefined" && typeof exports !== "undefined" && module.ex
                                 } else {
                                     var selected = false;
                                     if ($scope.options.multiSelection) {
-                                        $scope.handleMultiSelection(selectedNode);
+                                        $scope.handleMultiSelection(selectedNode, isChild);
                                     } else {
                                         if (!$scope.options.equality(selectedNode, $scope.selectedNode, $scope)) {
                                             $scope.selectedNode = selectedNode;
@@ -290,7 +290,10 @@ if (typeof module !== "undefined" && typeof exports !== "undefined" && module.ex
                                         }
                                     }
 
-                                    deselectParentNodes($scope.selectedNodes[selectedNode.parent].node, $scope, selected, true);
+                                    if (typeof selectedNode.parent !== "undefined") {
+                                        deselectParentNodes($scope.selectedNodes[selectedNode.parent].node, $scope, selected, true);
+                                    }
+
                                     if ($scope.onSelection) {
                                         var parentNode =
                                             transcludedScope.$parent.node === transcludedScope.synteticRoot
@@ -313,8 +316,13 @@ if (typeof module !== "undefined" && typeof exports !== "undefined" && module.ex
                                 }
                             };
 
-                            $scope.handleMultiSelection = function(selectedNode) {
-                                let selected = !$scope.selectedNodes[selectedNode.code].selected;
+                            $scope.handleMultiSelection = function(selectedNode, isChild) {
+                                let selected = false;
+                                if (isChild) {
+                                    selected = $scope.selectedNodes[$scope.selectedNodes[selectedNode.code].node.parent].selected;
+                                } else {
+                                    selected = !$scope.selectedNodes[selectedNode.code].selected;
+                                }
                                 $scope.selectedNodes[selectedNode.code].selected = selected;
 
                                 if (typeof selectedNode.parent !== "undefined") {
@@ -327,7 +335,7 @@ if (typeof module !== "undefined" && typeof exports !== "undefined" && module.ex
                                     var that = this;
                                     if (selectedNode.children.length > 0) {
                                         selectedNode.children.forEach(function(child, i) {
-                                            that.handleMultiSelection(child);
+                                            that.handleMultiSelection(child, true);
                                         });
                                     }
                                 }
