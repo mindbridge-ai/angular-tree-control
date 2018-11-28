@@ -321,29 +321,27 @@ if (typeof module !== "undefined" && typeof exports !== "undefined" && module.ex
                             };
 
                             $scope.handleMultiSelection = function(selectedNode, isChild) {
-                                if ($scope.selectedNodes) {
-                                    let selected = false;
-                                    if (isChild) {
-                                        selected = $scope.selectedNodes[$scope.selectedNodes[selectedNode.code].node.parent].selected;
-                                    } else {
-                                        selected = !$scope.selectedNodes[selectedNode.code].selected;
-                                    }
+                                var selected = false;
+                                if (isChild) {
+                                    selected = $scope.selectedNodes[$scope.selectedNodes[selectedNode.code].node.parent].selected;
+                                } else {
+                                    selected = !$scope.selectedNodes[selectedNode.code].selected;
+                                }
 
-                                    $scope.selectedNodes[selectedNode.code].selected = selected;
+                                $scope.selectedNodes[selectedNode.code].selected = selected;
 
-                                    if (typeof selectedNode.parent !== "undefined") {
-                                        selected
-                                            ? $scope.selectedNodes[selectedNode.parent].selectedChildren++
-                                            : $scope.selectedNodes[selectedNode.parent].selectedChildren--;
-                                    }
+                                if (typeof selectedNode.parent !== "undefined") {
+                                    selected
+                                        ? $scope.selectedNodes[selectedNode.parent].selectedChildren++
+                                        : $scope.selectedNodes[selectedNode.parent].selectedChildren--;
+                                }
 
-                                    if (this.autoSelectChildren) {
-                                        var that = this;
-                                        if (selectedNode.children.length > 0) {
-                                            selectedNode.children.forEach(function(child, i) {
-                                                that.handleMultiSelection(child, true);
-                                            });
-                                        }
+                                if (this.autoSelectChildren) {
+                                    var that = this;
+                                    if (selectedNode.children.length > 0) {
+                                        selectedNode.children.forEach(function(child, i) {
+                                            that.handleMultiSelection(child, true);
+                                        });
                                     }
                                 }
                             };
