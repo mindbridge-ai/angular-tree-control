@@ -184,12 +184,16 @@ if (typeof module !== "undefined" && typeof exports !== "undefined" && module.ex
                             $scope.parentScopeOfTree = $scope.$parent;
 
                             $scope.isSelectedNode = function(node) {
-                                $scope.selectedNodes[node.code].node.children.length - 1 ===
-                                $scope.selectedNodes[node.code].selectedChildren
-                                    ? (node.indeterminate = false)
-                                    : (node.indeterminate = true);
+                                if (!$scope.options.multiSelection && $scope.options.equality(node, $scope.selectedNode, $scope)) {
+                                    return true;
+                                } else if ($scope.options.multiSelection && $scope.selectedNodes) {
+                                    $scope.selectedNodes[node.code].node.children.length - 1 ===
+                                    $scope.selectedNodes[node.code].selectedChildren
+                                        ? (node.indeterminate = false)
+                                        : (node.indeterminate = true);
 
-                                return $scope.selectedNodes[node.code].selected;
+                                    return $scope.selectedNodes[node.code].selected;
+                                }
                             };
 
                             $scope.headClass = function(node) {
