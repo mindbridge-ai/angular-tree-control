@@ -63,30 +63,18 @@ if (typeof module !== "undefined" && typeof exports !== "undefined" && module.ex
         var newValue = false;
         //All children selected => select
         if (scope.selectedNodes[scope.orEmpty(selectedNode.type) + selectedNode.code].selectedChildren === selectedNode.children.length) {
-            // if (selected === false) {
-            //     newValue = true;
-            // }
             selected = true;
-
             //No children selected => deselect
         } else if (
             scope.selectedNodes[scope.orEmpty(selectedNode.type) + selectedNode.code].selectedChildren === 0 &&
             selectedNode.children.length > 0
         ) {
-            // if (selected === true) {
-            //     newValue = true;
-            // }
             selected = false;
-
             //Some children selected => deselect
         } else if (
             scope.selectedNodes[scope.orEmpty(selectedNode.type) + selectedNode.code].selectedChildren !== 0 &&
             selectedNode.children.length > 0
         ) {
-            // if (selected === true) {
-            //     newValue = true;
-            // }
-
             selected = false;
         }
 
