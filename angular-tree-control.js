@@ -60,29 +60,54 @@ if (typeof module !== "undefined" && typeof exports !== "undefined" && module.ex
     }
 
     function deselectParentNodes(selectedNode, scope, selected) {
+        var newValue = false;
         //All children selected => select
-        if (scope.selectedNodes[selectedNode.code].selectedChildren === selectedNode.children.length) {
+        if (scope.selectedNodes[scope.orEmpty(selectedNode.type) + selectedNode.code].selectedChildren === selectedNode.children.length) {
+            // if (selected === false) {
+            //     newValue = true;
+            // }
             selected = true;
+
             //No children selected => deselect
-        } else if (scope.selectedNodes[selectedNode.code].selectedChildren === 0 && selectedNode.children.length > 0) {
+        } else if (
+            scope.selectedNodes[scope.orEmpty(selectedNode.type) + selectedNode.code].selectedChildren === 0 &&
+            selectedNode.children.length > 0
+        ) {
+            // if (selected === true) {
+            //     newValue = true;
+            // }
             selected = false;
+
             //Some children selected => deselect
-        } else if (scope.selectedNodes[selectedNode.code].selectedChildren !== 0 && selectedNode.children.length > 0) {
+        } else if (
+            scope.selectedNodes[scope.orEmpty(selectedNode.type) + selectedNode.code].selectedChildren !== 0 &&
+            selectedNode.children.length > 0
+        ) {
+            // if (selected === true) {
+            //     newValue = true;
+            // }
+
             selected = false;
         }
 
-        scope.selectedNodes[selectedNode.code].selected = selected;
+        if (scope.selectedNodes[scope.orEmpty(selectedNode.type) + selectedNode.code].selected !== selected) {
+            scope.selectedNodes[scope.orEmpty(selectedNode.type) + selectedNode.code].selected = selected;
+            newValue = true;
+        }
+
         if (typeof selectedNode.parent !== "undefined") {
-            selected
-                ? scope.selectedNodes[selectedNode.parent].selectedChildren++
-                : scope.selectedNodes[selectedNode.parent].selectedChildren--;
+            if (newValue) {
+                selected
+                    ? scope.selectedNodes[selectedNode.parent].selectedChildren++
+                    : scope.selectedNodes[selectedNode.parent].selectedChildren--;
+            }
             deselectParentNodes(scope.selectedNodes[selectedNode.parent].node, scope, selected, false);
         }
     }
 
     function recurseChildren(node, scope) {
         node.children.forEach(function(child) {
-            scope.selectedNodes[child.code] = {
+            scope.selectedNodes[scope.orEmpty(child.type) + child.code] = {
                 node: child,
                 selected: false,
                 selectedChildren: 0
@@ -93,7 +118,7 @@ if (typeof module !== "undefined" && typeof exports !== "undefined" && module.ex
     }
 
     function createSelectedNode(node, scope) {
-        scope.selectedNodes[node.code] = {
+        scope.selectedNodes[scope.orEmpty(node.type) + node.code] = {
             node: node,
             selected: false,
             selectedChildren: 0
@@ -187,12 +212,12 @@ if (typeof module !== "undefined" && typeof exports !== "undefined" && module.ex
                                 if (!$scope.options.multiSelection && $scope.options.equality(node, $scope.selectedNode, $scope)) {
                                     return true;
                                 } else if ($scope.options.multiSelection && $scope.selectedNodes) {
-                                    $scope.selectedNodes[node.code].node.children.length - 1 ===
-                                    $scope.selectedNodes[node.code].selectedChildren
+                                    $scope.selectedNodes[$scope.orEmpty(node.type) + node.code].node.children.length - 1 ===
+                                    $scope.selectedNodes[$scope.orEmpty(node.type) + node.code].selectedChildren
                                         ? (node.indeterminate = false)
                                         : (node.indeterminate = true);
 
-                                    return $scope.selectedNodes[node.code].selected;
+                                    return $scope.selectedNodes[$scope.orEmpty(node.type) + node.code].selected;
                                 }
                             };
 
@@ -212,6 +237,10 @@ if (typeof module !== "undefined" && typeof exports !== "undefined" && module.ex
 
                             $scope.nodeExpanded = function() {
                                 return !!$scope.expandedNodesMap[this.$id];
+                            };
+
+                            $scope.orEmpty = function(entity) {
+                                return entity || "";
                             };
 
                             $scope.selectNodeHead = function() {
@@ -259,7 +288,8 @@ if (typeof module !== "undefined" && typeof exports !== "undefined" && module.ex
 
                             $scope.isPartiallySelectedNode = function(node) {
                                 return (
-                                    $scope.selectedNodes[node.code].children.length - 1 === $scope.selectedNodes[node.code].selectedChildren
+                                    $scope.selectedNodes[$scope.orEmpty(node.type) + node.code].children.length - 1 ===
+                                    $scope.selectedNodes[$scope.orEmpty(node.type) + node.code].selectedChildren
                                 );
                             };
 
@@ -322,15 +352,21 @@ if (typeof module !== "undefined" && typeof exports !== "undefined" && module.ex
 
                             $scope.handleMultiSelection = function(selectedNode, isChild) {
                                 var selected = false;
+                                var newValue = false;
                                 if (isChild) {
-                                    selected = $scope.selectedNodes[$scope.selectedNodes[selectedNode.code].node.parent].selected;
+                                    selected =
+                                        $scope.selectedNodes[
+                                            $scope.selectedNodes[$scope.orEmpty(selectedNode.type) + selectedNode.code].node.parent
+                                        ].selected;
                                 } else {
-                                    selected = !$scope.selectedNodes[selectedNode.code].selected;
+                                    selected = !$scope.selectedNodes[$scope.orEmpty(selectedNode.type) + selectedNode.code].selected;
+                                }
+                                if ($scope.selectedNodes[$scope.orEmpty(selectedNode.type) + selectedNode.code].selected !== selected) {
+                                    $scope.selectedNodes[$scope.orEmpty(selectedNode.type) + selectedNode.code].selected = selected;
+                                    newValue = true;
                                 }
 
-                                $scope.selectedNodes[selectedNode.code].selected = selected;
-
-                                if (typeof selectedNode.parent !== "undefined") {
+                                if (typeof selectedNode.parent !== "undefined" && newValue) {
                                     selected
                                         ? $scope.selectedNodes[selectedNode.parent].selectedChildren++
                                         : $scope.selectedNodes[selectedNode.parent].selectedChildren--;
@@ -398,7 +434,7 @@ if (typeof module !== "undefined" && typeof exports !== "undefined" && module.ex
                                     "set-node-to-data>" +
                                     '<i class="tree-branch-head" ng-class="iBranchClass()" ng-click="selectNodeHead(node)"></i>' +
                                     '<i class="tree-leaf-head {{options.iLeafClass}}"></i>' +
-                                    '<input id="node.code" ng-show="options.multiSelection" type="checkbox" style="cursor: pointer;" ng-checked="isSelectedNode(node)" ng-click="selectNodeLabel(node, false)"></input>' +
+                                    '<input id="orEmpty(node.type) + node.code" ng-show="options.multiSelection" type="checkbox" style="cursor: pointer;" ng-checked="isSelectedNode(node)" ng-click="selectNodeLabel(node, false)"></input>' +
                                     '<div class="tree-label {{options.labelClass}}"  ng-class="options.multiSelection ? [] : [selectedClass(), unselectableClass()]" ng-click="selectNodeLabel(node, false)" tree-transclude></div>' +
                                     '<treeitem class="tree-control-item" ng-show="nodeExpanded()"></treeitem>' +
                                     "</li>" +
