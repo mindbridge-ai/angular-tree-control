@@ -422,9 +422,9 @@ if (typeof module !== "undefined" && typeof exports !== "undefined" && module.ex
                                     "set-node-to-data>" +
                                     '<i class="tree-branch-head" ng-class="iBranchClass()" ng-click="selectNodeHead(node)"></i>' +
                                     '<i class="tree-leaf-head {{options.iLeafClass}}"></i>' +
-                                    '<input id="orEmpty(node.type) + node.code" ng-show="options.multiSelection" type="checkbox" style="cursor: pointer;" ng-checked="isSelectedNode(node)" ng-click="selectNodeLabel(node, false)"></input>' +
+                                    '<input id="orEmpty(node.type) + node.code" ng-if="options.multiSelection" type="checkbox" style="cursor: pointer;" ng-checked="isSelectedNode(node)" ng-click="selectNodeLabel(node, false)"></input>' +
                                     '<div class="tree-label {{options.labelClass}}"  ng-class="options.multiSelection ? [] : [selectedClass(), unselectableClass()]" ng-click="selectNodeLabel(node, false)" tree-transclude></div>' +
-                                    '<treeitem class="tree-control-item" ng-show="nodeExpanded()"></treeitem>' +
+                                    '<treeitem class="tree-control-item" ng-if="nodeExpanded()"></treeitem>' +
                                     "</li>" +
                                     "</ul>";
                             }
@@ -535,7 +535,7 @@ if (typeof module !== "undefined" && typeof exports !== "undefined" && module.ex
                     }
                     if (!scope.options.multiSelection && scope.options.equality(scope.node, scope.selectedNode, scope)) {
                         scope.selectedNode = scope.node;
-                    } else if (scope.options.multiSelection) {
+                    } else if (scope.options.multiSelection && !scope.selectedNodes[scope.orEmpty(scope.node.type) + scope.node.code]) {
                         createSelectedNode(scope.node, scope);
                     }
 
