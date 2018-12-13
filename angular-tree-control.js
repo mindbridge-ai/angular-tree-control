@@ -231,10 +231,6 @@ if (typeof module !== "undefined" && typeof exports !== "undefined" && module.ex
                                 return !!$scope.expandedNodesMap[this.$id];
                             };
 
-                            orEmpty = function(entity) {
-                                return entity || "";
-                            };
-
                             $scope.selectNodeHead = function() {
                                 var transcludedScope = this;
                                 var expanding = $scope.expandedNodesMap[transcludedScope.$id] === undefined;
