@@ -62,24 +62,24 @@ if (typeof module !== "undefined" && typeof exports !== "undefined" && module.ex
     function deselectParentNodes(selectedNode, scope, selected) {
         var newValue = false;
         //All children selected => select
-        if (scope.selectedNodes[scope.orEmpty(selectedNode.type) + selectedNode.code].selectedChildren === selectedNode.children.length) {
+        if (scope.selectedNodes[orEmpty(selectedNode.type) + selectedNode.code].selectedChildren === selectedNode.children.length) {
             selected = true;
             //No children selected => deselect
         } else if (
-            scope.selectedNodes[scope.orEmpty(selectedNode.type) + selectedNode.code].selectedChildren === 0 &&
+            scope.selectedNodes[orEmpty(selectedNode.type) + selectedNode.code].selectedChildren === 0 &&
             selectedNode.children.length > 0
         ) {
             selected = false;
             //Some children selected => deselect
         } else if (
-            scope.selectedNodes[scope.orEmpty(selectedNode.type) + selectedNode.code].selectedChildren !== 0 &&
+            scope.selectedNodes[orEmpty(selectedNode.type) + selectedNode.code].selectedChildren !== 0 &&
             selectedNode.children.length > 0
         ) {
             selected = false;
         }
 
-        if (scope.selectedNodes[scope.orEmpty(selectedNode.type) + selectedNode.code].selected !== selected) {
-            scope.selectedNodes[scope.orEmpty(selectedNode.type) + selectedNode.code].selected = selected;
+        if (scope.selectedNodes[orEmpty(selectedNode.type) + selectedNode.code].selected !== selected) {
+            scope.selectedNodes[orEmpty(selectedNode.type) + selectedNode.code].selected = selected;
             newValue = true;
         }
 
@@ -89,13 +89,13 @@ if (typeof module !== "undefined" && typeof exports !== "undefined" && module.ex
                     ? scope.selectedNodes[selectedNode.parent].selectedChildren++
                     : scope.selectedNodes[selectedNode.parent].selectedChildren--;
             }
-            deselectParentNodes(scope.selectedNodes[selectedNode.parent].node, scope, selected, false);
+            deselectParentNodes(scope.selectedNodes[selectedNode.parent].node, scope, selected);
         }
     }
 
     function recurseChildren(node, scope) {
         node.children.forEach(function(child) {
-            scope.selectedNodes[scope.orEmpty(child.type) + child.code] = {
+            scope.selectedNodes[orEmpty(child.type) + child.code] = {
                 node: child,
                 selected: false,
                 selectedChildren: 0
@@ -106,7 +106,7 @@ if (typeof module !== "undefined" && typeof exports !== "undefined" && module.ex
     }
 
     function createSelectedNode(node, scope) {
-        scope.selectedNodes[scope.orEmpty(node.type) + node.code] = {
+        scope.selectedNodes[orEmpty(node.type) + node.code] = {
             node: node,
             selected: false,
             selectedChildren: 0
@@ -118,6 +118,10 @@ if (typeof module !== "undefined" && typeof exports !== "undefined" && module.ex
         for (var i = 0; i < treeModel.length; i++) {
             createSelectedNode(treeModel[i], scope);
         }
+    }
+
+    function orEmpty(entity) {
+        return entity || "";
     }
 
     function ensureAllDefaultOptions($scope) {
@@ -200,12 +204,12 @@ if (typeof module !== "undefined" && typeof exports !== "undefined" && module.ex
                                 if (!$scope.options.multiSelection && $scope.options.equality(node, $scope.selectedNode, $scope)) {
                                     return true;
                                 } else if ($scope.options.multiSelection && $scope.selectedNodes) {
-                                    $scope.selectedNodes[$scope.orEmpty(node.type) + node.code].node.children.length - 1 ===
-                                    $scope.selectedNodes[$scope.orEmpty(node.type) + node.code].selectedChildren
+                                    $scope.selectedNodes[orEmpty(node.type) + node.code].node.children.length - 1 ===
+                                    $scope.selectedNodes[orEmpty(node.type) + node.code].selectedChildren
                                         ? (node.indeterminate = false)
                                         : (node.indeterminate = true);
 
-                                    return $scope.selectedNodes[$scope.orEmpty(node.type) + node.code].selected;
+                                    return $scope.selectedNodes[orEmpty(node.type) + node.code].selected;
                                 }
                             };
 
@@ -225,10 +229,6 @@ if (typeof module !== "undefined" && typeof exports !== "undefined" && module.ex
 
                             $scope.nodeExpanded = function() {
                                 return !!$scope.expandedNodesMap[this.$id];
-                            };
-
-                            $scope.orEmpty = function(entity) {
-                                return entity || "";
                             };
 
                             $scope.selectNodeHead = function() {
@@ -276,8 +276,8 @@ if (typeof module !== "undefined" && typeof exports !== "undefined" && module.ex
 
                             $scope.isPartiallySelectedNode = function(node) {
                                 return (
-                                    $scope.selectedNodes[$scope.orEmpty(node.type) + node.code].children.length - 1 ===
-                                    $scope.selectedNodes[$scope.orEmpty(node.type) + node.code].selectedChildren
+                                    $scope.selectedNodes[orEmpty(node.type) + node.code].children.length - 1 ===
+                                    $scope.selectedNodes[orEmpty(node.type) + node.code].selectedChildren
                                 );
                             };
 
@@ -344,13 +344,13 @@ if (typeof module !== "undefined" && typeof exports !== "undefined" && module.ex
                                 if (isChild) {
                                     selected =
                                         $scope.selectedNodes[
-                                            $scope.selectedNodes[$scope.orEmpty(selectedNode.type) + selectedNode.code].node.parent
+                                            $scope.selectedNodes[orEmpty(selectedNode.type) + selectedNode.code].node.parent
                                         ].selected;
                                 } else {
-                                    selected = !$scope.selectedNodes[$scope.orEmpty(selectedNode.type) + selectedNode.code].selected;
+                                    selected = !$scope.selectedNodes[orEmpty(selectedNode.type) + selectedNode.code].selected;
                                 }
-                                if ($scope.selectedNodes[$scope.orEmpty(selectedNode.type) + selectedNode.code].selected !== selected) {
-                                    $scope.selectedNodes[$scope.orEmpty(selectedNode.type) + selectedNode.code].selected = selected;
+                                if ($scope.selectedNodes[orEmpty(selectedNode.type) + selectedNode.code].selected !== selected) {
+                                    $scope.selectedNodes[orEmpty(selectedNode.type) + selectedNode.code].selected = selected;
                                     newValue = true;
                                 }
 
@@ -535,7 +535,7 @@ if (typeof module !== "undefined" && typeof exports !== "undefined" && module.ex
                     }
                     if (!scope.options.multiSelection && scope.options.equality(scope.node, scope.selectedNode, scope)) {
                         scope.selectedNode = scope.node;
-                    } else if (scope.options.multiSelection && !scope.selectedNodes[scope.orEmpty(scope.node.type) + scope.node.code]) {
+                    } else if (scope.options.multiSelection && !scope.selectedNodes[orEmpty(scope.node.type) + scope.node.code]) {
                         createSelectedNode(scope.node, scope);
                     }
 
