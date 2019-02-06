@@ -217,6 +217,7 @@ if (typeof module !== "undefined" && typeof exports !== "undefined" && module.ex
                                 var liSelectionClass = classIfDefined($scope.options.injectClasses.liSelected, false);
                                 var injectSelectionClass = "";
                                 if (liSelectionClass && this.isSelectedNode(node)) injectSelectionClass = " " + liSelectionClass;
+                                if ($scope.options.multiSelection) injectSelectionClass = " " + "tree-control";
                                 if ($scope.options.isLeaf(node, $scope)) return "tree-leaf" + injectSelectionClass;
                                 if ($scope.expandedNodesMap[this.$id]) return "tree-expanded" + injectSelectionClass;
                                 else return "tree-collapsed" + injectSelectionClass;
@@ -418,7 +419,7 @@ if (typeof module !== "undefined" && typeof exports !== "undefined" && module.ex
                             if (!template) {
                                 template =
                                     "<ul {{options.ulClass}} >" +
-                                    '<li class="tree-control" ng-repeat="node in node.{{options.nodeChildren}} | filter:filterExpression:filterComparator {{options.orderBy}}" ng-class="headClass(node)" {{options.liClass}}' +
+                                    '<li  ng-repeat="node in node.{{options.nodeChildren}} | filter:filterExpression:filterComparator {{options.orderBy}}" ng-class="headClass(node)" {{options.liClass}}' +
                                     "set-node-to-data>" +
                                     '<i class="tree-branch-head" ng-class="iBranchClass()" ng-click="selectNodeHead(node)"></i>' +
                                     '<i class="tree-leaf-head {{options.iLeafClass}}"></i>' +
