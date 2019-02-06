@@ -417,13 +417,13 @@ if (typeof module !== "undefined" && typeof exports !== "undefined" && module.ex
 
                             if (!template) {
                                 template =
-                                    "<ul  {{options.ulClass}} >" +
-                                    '<li  class="tree-control" ng-repeat="node in node.{{options.nodeChildren}} | filter:filterExpression:filterComparator {{options.orderBy}}" ng-class="headClass(node)" {{options.liClass}}' +
+                                    "<ul {{options.ulClass}} >" +
+                                    '<li class="tree-control" ng-repeat="node in node.{{options.nodeChildren}} | filter:filterExpression:filterComparator {{options.orderBy}}" ng-class="headClass(node)" {{options.liClass}}' +
                                     "set-node-to-data>" +
                                     '<i class="tree-branch-head" ng-class="iBranchClass()" ng-click="selectNodeHead(node)"></i>' +
                                     '<i class="tree-leaf-head {{options.iLeafClass}}"></i>' +
-                                    '<input  ng-show="options.multiSelection" type="checkbox" style="cursor: pointer;"  ng-checked="isSelectedNode(node)" ng-click="selectNodeLabel(node)"/>' +
-                                    '<div class="tree-label {{options.labelClass}}"  ng-class="options.multiSelection ? [] : [selectedClass(), unselectableClass()]" ng-click="selectNodeLabel(node)" tree-transclude></div>' +
+                                    '<input id="orEmpty(node.type) + node.code" ng-if="options.multiSelection" type="checkbox" style="cursor: pointer;" ng-checked="isSelectedNode(node)" ng-click="selectNodeLabel(node, false)"></input>' +
+                                    '<div class="tree-label {{options.labelClass}}"  ng-class="options.multiSelection ? [] : [selectedClass(), unselectableClass()]" ng-click="selectNodeLabel(node, false)" tree-transclude></div>' +
                                     '<treeitem class="tree-control-item" ng-if="nodeExpanded()"></treeitem>' +
                                     "</li>" +
                                     "</ul>";
