@@ -179,7 +179,9 @@ if (typeof module !== "undefined" && typeof exports !== "undefined" && module.ex
                         orderBy: "=?",
                         reverseOrder: "@",
                         filterExpression: "=?",
-                        filterComparator: "=?"
+                        filterComparator: "=?",
+                        // If true, disable clicking on non-leaf nodes
+                        disableTreeNodes: "<?"
                     },
                     controller: [
                         "$scope",
@@ -400,6 +402,10 @@ if (typeof module !== "undefined" && typeof exports !== "undefined" && module.ex
                                 return $scope.orderBy;
                             };
 
+                            $scope.disableNode = function(node) {
+                                return $scope.disableTreeNodes && !$scope.options.isLeaf(node, $scope);
+                            };
+
                             var templateOptions = {
                                 orderBy: $scope.orderBy ? " | orderBy:orderByFunc():isReverse()" : "",
                                 ulClass: classIfDefined($scope.options.injectClasses.ul, true),
@@ -424,7 +430,8 @@ if (typeof module !== "undefined" && typeof exports !== "undefined" && module.ex
                                     '<i class="tree-branch-head" ng-class="iBranchClass()" ng-click="selectNodeHead(node)"></i>' +
                                     '<i class="tree-leaf-head {{options.iLeafClass}}"></i>' +
                                     '<input id="orEmpty(node.type) + node.code" ng-if="options.multiSelection" type="checkbox" style="cursor: pointer;" ng-checked="isSelectedNode(node)" ng-click="selectNodeLabel(node, false)"></input>' +
-                                    '<div class="tree-label {{options.labelClass}}"  ng-class="options.multiSelection ? [] : [selectedClass(), unselectableClass()]" ng-click="selectNodeLabel(node, false)" tree-transclude></div>' +
+                                    '<div class="tree-label {{options.labelClass}}"  ng-class="options.multiSelection ? [] : [selectedClass(), unselectableClass()]" ' +
+                                    'ng-click="disableNode(node) || selectNodeLabel(node, false)" tooltip-enable="disableNode(node)" uib-tooltip="{{ \'views.accountMapping.messages.disabledNode\' | translate }}" tree-transclude></div>' +
                                     '<treeitem class="tree-control-item" ng-if="nodeExpanded()"></treeitem>' +
                                     "</li>" +
                                     "</ul>";
