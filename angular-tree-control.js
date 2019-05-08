@@ -137,6 +137,7 @@ if (typeof module !== "undefined" && typeof exports !== "undefined" && module.ex
         ensureDefault($scope.options.injectClasses, "iLeaf", "");
         ensureDefault($scope.options.injectClasses, "label", "");
         ensureDefault($scope.options.injectClasses, "labelSelected", "");
+        ensureDefault($scope.options.injectClasses, "labelDisabled", "");
         ensureDefault($scope.options, "equality", defaultEquality);
         ensureDefault($scope.options, "isLeaf", defaultIsLeaf);
         ensureDefault($scope.options, "allowDeselect", true);
@@ -316,7 +317,7 @@ if (typeof module !== "undefined" && typeof exports !== "undefined" && module.ex
                                     }
 
                                     if (typeof selectedNode.parent !== "undefined" && $scope.options.multiSelection) {
-                                        deselectParentNodes($scope.selectedNodes[selectedNode.parent].node, $scope, selected, true);
+                                        deselectParentNodes($scope.selectedNodes[selectedNode.parent].node, $scope, selected);
                                     }
 
                                     if ($scope.onSelection) {
@@ -388,6 +389,15 @@ if (typeof module !== "undefined" && typeof exports !== "undefined" && module.ex
                                 return isThisNodeUnselectable ? "tree-unselectable " + labelUnselectableClass : "";
                             };
 
+                            $scope.disabledClass = function() {
+                                var isThisNodeDisabled = this.disableNode(this.node);
+                                var labelDisabledClass = classIfDefined($scope.options.injectClasses.labelDisabled, false);
+                                var injectDisabledClass = "";
+                                if (labelDisabledClass && isThisNodeDisabled) injectDisabledClass = " " + labelDisabledClass;
+
+                                return isThisNodeDisabled ? "tree-disabled" + injectDisabledClass : "";
+                            };
+
                             //tree template
                             $scope.isReverse = function() {
                                 return !(
@@ -430,8 +440,8 @@ if (typeof module !== "undefined" && typeof exports !== "undefined" && module.ex
                                     '<i class="tree-branch-head" ng-class="iBranchClass()" ng-click="selectNodeHead(node)"></i>' +
                                     '<i class="tree-leaf-head {{options.iLeafClass}}"></i>' +
                                     '<input id="orEmpty(node.type) + node.code" ng-if="options.multiSelection" type="checkbox" style="cursor: pointer;" ng-checked="isSelectedNode(node)" ng-click="selectNodeLabel(node, false)"></input>' +
-                                    '<div class="tree-label {{options.labelClass}}"  ng-class="options.multiSelection ? [] : [selectedClass(), unselectableClass()]" ' +
-                                    'ng-click="disableNode(node) || selectNodeLabel(node, false)" tooltip-enable="disableNode(node)" uib-tooltip="{{ \'views.accountMapping.messages.disabledNode\' | translate }}" tree-transclude></div>' +
+                                    '<div class="tree-label {{options.labelClass}}"  ng-class="[options.multiSelection ? [] : [selectedClass(), unselectableClass()], disableNode(node) ? [disabledClass()] : []]" ' +
+                                    'ng-click="disableNode(node) || selectNodeLabel(node, false)" tooltip-enable="disableNode(node)" uib-tooltip="{{ \'views.accountMapping.messages.disabledNode\' | translate }}" tooltip-animation="false" tooltip-placement="right" tooltip-popup-delay="0" tree-transclude></div>' +
                                     '<treeitem class="tree-control-item" ng-if="nodeExpanded()"></treeitem>' +
                                     "</li>" +
                                     "</ul>";
